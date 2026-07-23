@@ -1,6 +1,22 @@
 import { defineStore } from 'pinia'
 import { authApi } from '@/modules/auth/api'
 
+function withTimeout(promise, ms) {
+  return new Promise((resolve, reject) => {
+    const timer = setTimeout(() => reject(new Error('timeout')), ms)
+    promise.then(
+      (value) => {
+        clearTimeout(timer)
+        resolve(value)
+      },
+      (err) => {
+        clearTimeout(timer)
+        reject(err)
+      },
+    )
+  })
+}
+
 /**
  * Global auth state. The session credential itself lives in an
  * HttpOnly cookie managed by the browser: this store only keeps
@@ -22,12 +38,13 @@ export const useAuthStore = defineStore('auth', {
     /**
      * Restores the session on app boot (page reload). Silent by
      * design: a 401 just means "not logged in".
+     * Timeout avoids infinite blank screen when the API is cold (Render free).
      */
-    async init() {
+    async init(timeoutMs = 8000) {
       if (this.initialized) return
 
       try {
-        const { data } = await authApi.me()
+        const { data } = await withTimeout(authApi.me(), timeoutMs)
         this.user = data.data
       } catch {
         this.user = null
@@ -37,8 +54,9 @@ export const useAuthStore = defineStore('auth', {
     },
 
     async login(credentials) {
-      await authApi.csrf()
-      const { data } = await authApi.login(credentials)
+      // Cold starts on free hosting can take ~60s; keep trying.
+      await withTimeout(authApi.csrf(), 90000)
+      const { data } = await withTimeout(authApi.login(credentials), 90000)
       this.user = data.data
     },
 

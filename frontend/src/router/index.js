@@ -158,7 +158,9 @@ router.beforeEach(async (to) => {
   const auth = useAuthStore()
 
   if (!auth.initialized) {
-    await auth.init()
+    // Login must paint quickly; don't wait long for a sleeping API.
+    const timeoutMs = to.meta.guest ? 2500 : 10000
+    await auth.init(timeoutMs)
   }
 
   if (to.meta.requiresAuth && !auth.isAuthenticated) {
