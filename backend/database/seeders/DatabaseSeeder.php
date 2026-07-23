@@ -16,8 +16,14 @@ class DatabaseSeeder extends Seeder
             SettingsSeeder::class,
         ]);
 
-        if (app()->environment('production')) {
-            $this->command?->warn('Entorno production: no se crean usuarios demo.');
+        // En producción real: SEED_DEMO_USERS=false. En demo pública (Render): true.
+        $seedDemo = filter_var(
+            env('SEED_DEMO_USERS', ! app()->isProduction()),
+            FILTER_VALIDATE_BOOLEAN
+        );
+
+        if (! $seedDemo) {
+            $this->command?->warn('SEED_DEMO_USERS desactivado: no se crean usuarios demo.');
 
             return;
         }
