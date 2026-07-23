@@ -25,6 +25,9 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        // Render / proxies terminate TLS; required for Secure cookies + HTTPS URLs.
+        $middleware->trustProxies(at: '*');
+
         // Sanctum SPA mode: requests from SANCTUM_STATEFUL_DOMAINS are
         // authenticated via secure session cookies (HttpOnly + CSRF).
         $middleware->statefulApi();

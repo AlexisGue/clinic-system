@@ -58,6 +58,10 @@ Abrir: http://localhost:5173
 
 Roles: `admin`, `doctor`, `receptionist`.
 
+## Despliegue (Vercel + Render)
+
+Pasos completos: [`docs/DEPLOY.md`](docs/DEPLOY.md).
+
 ## Módulos
 
 Auth · Users/Roles/Audit · Pacientes · Médicos · Citas · Consultas · Recetas · Cobros ligeros · Dashboard · Reportes · Settings · Catálogos (especialidades, medicamentos).
