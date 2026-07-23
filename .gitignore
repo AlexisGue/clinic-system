@@ -1,0 +1,38 @@
+# Root
+.DS_Store
+Thumbs.db
+*.log
+.idea/
+.vscode/
+*.swp
+
+# Env secrets (never commit)
+.env
+.env.*
+!.env.example
+**/.env
+!**/.env.example
+
+# Dependencies
+**/vendor/
+**/node_modules/
+
+# Frontend build
+frontend/dist/
+
+# Backend runtime
+backend/storage/logs/*
+backend/storage/framework/cache/*
+backend/storage/framework/sessions/*
+backend/storage/framework/views/*
+backend/bootstrap/cache/*.php
+!backend/storage/logs/.gitignore
+!backend/storage/framework/**/.gitignore
+!backend/bootstrap/cache/.gitignore
+
+# PHPUnit / coverage
+backend/.phpunit.result.cache
+backend/coverage/
+
+# OS / tooling
+.phpactor.json
