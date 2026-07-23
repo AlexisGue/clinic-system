@@ -32,7 +32,10 @@ onMounted(async () => {
   }
 
   try {
-    const { data } = await authApi.branding()
+    const { data } = await Promise.race([
+      authApi.branding(),
+      new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 4000)),
+    ])
     clinicName.value = data.data.clinic_name || clinicName.value
     tagline.value = data.data.tagline || tagline.value
   } catch {
@@ -70,7 +73,9 @@ async function submit() {
     const status = error.response?.status
     const data = error.response?.data
 
-    if (status === 422) {
+    if (error.message === 'timeout' || error.code === 'ECONNABORTED') {
+      generalError.value = 'El servidor está despertando. Espera ~1 minuto e intenta de nuevo.'
+    } else if (status === 422) {
       errors.value = data?.errors ?? {}
       const fieldMessage = errors.value.email?.[0] || errors.value.password?.[0]
       generalError.value = fieldMessage
