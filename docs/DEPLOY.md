@@ -24,9 +24,9 @@ Guía para publicar **Clinic System** y compartirlo con amigos.
 ### 1.2 Web Service (Docker)
 1. **New +** → **Web Service** → conecta el repo `AlexisGue/clinic-system`.
 2. Configura:
-   - **Root Directory:** `backend`
+   - **Root Directory:** *(vacío / en blanco)*
    - **Runtime:** Docker
-   - **Dockerfile Path:** `./Dockerfile` (relativo a `backend`)
+   - **Dockerfile Path:** `./Dockerfile` (raíz del repo)
    - Plan: **Free**
 3. **Environment** (Variables):
 
@@ -85,13 +85,17 @@ php artisan key:generate --show
    - Output Directory: `dist`
 3. **Environment Variable:**
 
+En producción (proxy same-origin), **borra** `VITE_API_URL` o déjala vacía.
+
+Solo en local:
+
 ```env
-VITE_API_URL=https://TU-API.onrender.com
+VITE_API_URL=http://localhost:8000
 ```
 
-(sin barra final)
-
 4. Deploy. Copia la URL (ej. `https://clinic-system-xxxx.vercel.app`).
+
+> `frontend/vercel.json` reenvía `/api` y `/sanctum` a Render para que las cookies CSRF funcionen en el mismo dominio.
 
 ---
 
