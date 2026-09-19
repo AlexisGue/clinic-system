@@ -47,7 +47,9 @@ DB_DATABASE=
 DB_USERNAME=
 DB_PASSWORD=
 
-SESSION_DRIVER=database
+SESSION_DRIVER=file
+CACHE_STORE=file
+QUEUE_CONNECTION=sync
 SESSION_LIFETIME=10080
 SESSION_ENCRYPT=true
 SESSION_SECURE_COOKIE=true
@@ -62,6 +64,9 @@ RUN_SEED=true
 SEED_DEMO_USERS=true
 LOG_LEVEL=error
 ```
+
+> Importante: en Docker/Render usa `SESSION_DRIVER=file` y `CACHE_STORE=file`.
+> Si dejas `database` y las migraciones aún no corrieron, **toda** la API responde `Server Error`.
 
 4. Genera `APP_KEY` en tu PC:
 

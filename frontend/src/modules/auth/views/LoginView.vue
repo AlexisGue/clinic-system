@@ -125,6 +125,8 @@ async function submit() {
       generalError.value = 'Demasiados intentos. Espera un minuto e intenta de nuevo.'
     } else if (status === 419) {
       generalError.value = 'La sesión de seguridad expiró. Recarga la página e intenta de nuevo.'
+    } else if (status >= 500) {
+      generalError.value = 'Error del servidor. Si persiste, reinicia el servicio en Render y espera a que /up diga Application up.'
     } else {
       generalError.value = data?.message
         || 'No se pudo conectar con el servidor. Intenta más tarde.'

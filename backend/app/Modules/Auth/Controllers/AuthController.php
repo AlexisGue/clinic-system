@@ -23,10 +23,16 @@ class AuthController extends Controller
 
     public function branding(): JsonResponse
     {
-        $company = $this->settings->company();
+        try {
+            $company = $this->settings->company();
+            $clinicName = $company['business_name'];
+        } catch (\Throwable) {
+            // DB may be waking on free hosting; keep login usable.
+            $clinicName = (string) config('app.name');
+        }
 
         return $this->success([
-            'clinic_name' => $company['business_name'],
+            'clinic_name' => $clinicName,
             'tagline' => 'Atención más ordenada: pacientes, agenda, consultas y recetas en un solo lugar.',
         ]);
     }
