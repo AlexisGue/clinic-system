@@ -28,7 +28,7 @@ Route::prefix('v1')->group(function (): void {
             $databaseError = class_basename($e).': '.$e->getMessage();
         }
 
-        $ok = $database && $sessionsTable;
+        $ok = $database && ($sessionsTable || config('session.driver') === 'file');
 
         return response()->json([
             'message' => $ok ? 'OK' : 'DEGRADED',
