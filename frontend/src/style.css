@@ -108,6 +108,33 @@
       disabled:cursor-not-allowed disabled:opacity-60;
   }
 
+  .btn-action {
+    @apply inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1.5 text-xs font-semibold shadow-sm transition
+      focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1
+      disabled:cursor-not-allowed disabled:opacity-50;
+  }
+
+  .btn-action-view,
+  .btn-action-neutral {
+    @apply border-slate-200 bg-white text-slate-700 hover:border-slate-300 hover:bg-slate-50
+      focus-visible:ring-slate-300;
+  }
+
+  .btn-action-edit {
+    @apply border-brand-200 bg-brand-50 text-brand-800 hover:border-brand-300 hover:bg-brand-100
+      focus-visible:ring-brand-300;
+  }
+
+  .btn-action-danger {
+    @apply border-rose-200 bg-rose-50 text-rose-700 hover:border-rose-300 hover:bg-rose-100
+      focus-visible:ring-rose-300;
+  }
+
+  .btn-action-warn {
+    @apply border-amber-200 bg-amber-50 text-amber-800 hover:border-amber-300 hover:bg-amber-100
+      focus-visible:ring-amber-300;
+  }
+
   .input-field {
     @apply w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-800 shadow-sm outline-none transition
       placeholder:text-slate-400

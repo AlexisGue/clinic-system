@@ -30,6 +30,7 @@ const api = axios.create({
 export function csrfCookie() {
   return axios.get(`${apiOrigin}/sanctum/csrf-cookie`, {
     withCredentials: true,
+    timeout: 90000,
   })
 }
 
@@ -39,8 +40,10 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     const status = error.response?.status
+    // Session probe (/auth/me) uses silentAuth — a 401 there just means "guest".
+    const silent = error.config?.silentAuth === true
 
-    if (status === 401) {
+    if (status === 401 && !silent) {
       // Session expired or not authenticated: reset local state.
       window.dispatchEvent(new CustomEvent('auth:unauthenticated'))
     }

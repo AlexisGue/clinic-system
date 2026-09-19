@@ -4,6 +4,8 @@ import { useRouter } from 'vue-router'
 import DataTable from '@/components/ui/DataTable.vue'
 import FormField from '@/components/ui/FormField.vue'
 import BaseModal from '@/components/ui/BaseModal.vue'
+import ActionButton from '@/components/ui/ActionButton.vue'
+import RowActions from '@/components/ui/RowActions.vue'
 import { patientsApi } from '@/modules/patients/api'
 import { useAuthStore } from '@/stores/auth'
 
@@ -147,9 +149,11 @@ onMounted(load)
         <span :class="row.is_active ? 'text-emerald-600' : 'text-slate-400'">{{ row.is_active ? 'Activo' : 'Inactivo' }}</span>
       </template>
       <template #cell-actions="{ row }">
-        <button class="mr-2 text-brand-700 hover:underline" @click="router.push({ name: 'patients.show', params: { id: row.id } })">Ver</button>
-        <button v-if="auth.can('patients.update')" class="mr-2 text-brand-700 hover:underline" @click="openEdit(row)">Editar</button>
-        <button v-if="auth.can('patients.delete')" class="text-rose-600 hover:underline" @click="remove(row)">Eliminar</button>
+        <RowActions>
+          <ActionButton variant="view" label="Ver" @click="router.push({ name: 'patients.show', params: { id: row.id } })" />
+          <ActionButton v-if="auth.can('patients.update')" variant="edit" label="Editar" @click="openEdit(row)" />
+          <ActionButton v-if="auth.can('patients.delete')" variant="danger" label="Eliminar" @click="remove(row)" />
+        </RowActions>
       </template>
     </DataTable>
 

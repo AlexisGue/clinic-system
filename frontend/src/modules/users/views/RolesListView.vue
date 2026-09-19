@@ -2,6 +2,8 @@
 import { onMounted, reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { rolesApi } from '@/modules/users/api'
+import ActionButton from '@/components/ui/ActionButton.vue'
+import RowActions from '@/components/ui/RowActions.vue'
 
 const router = useRouter()
 const loading = ref(false)
@@ -103,21 +105,21 @@ onMounted(load)
             <td class="px-4 py-3 text-slate-500">{{ role.permissions?.length ?? 0 }}</td>
             <td class="px-4 py-3 text-slate-500">{{ role.users_count ?? 0 }}</td>
             <td class="px-4 py-3 text-right">
-              <button
-                v-can="'roles.update'"
-                class="mr-2 text-brand-600 hover:underline"
-                @click="router.push({ name: 'roles.edit', params: { id: role.id } })"
-              >
-                Editar
-              </button>
-              <button
-                v-if="role.name !== 'admin'"
-                v-can="'roles.delete'"
-                class="text-rose-600 hover:underline"
-                @click="remove(role)"
-              >
-                Eliminar
-              </button>
+              <RowActions>
+                <ActionButton
+                  v-can="'roles.update'"
+                  variant="edit"
+                  label="Editar"
+                  @click="router.push({ name: 'roles.edit', params: { id: role.id } })"
+                />
+                <ActionButton
+                  v-if="role.name !== 'admin'"
+                  v-can="'roles.delete'"
+                  variant="danger"
+                  label="Eliminar"
+                  @click="remove(role)"
+                />
+              </RowActions>
             </td>
           </tr>
         </tbody>

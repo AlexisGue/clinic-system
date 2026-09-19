@@ -3,6 +3,8 @@ import { onMounted, reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { usersApi } from '@/modules/users/api'
+import ActionButton from '@/components/ui/ActionButton.vue'
+import RowActions from '@/components/ui/RowActions.vue'
 
 const auth = useAuthStore()
 const router = useRouter()
@@ -123,20 +125,20 @@ onMounted(load)
               </span>
             </td>
             <td class="px-4 py-3 text-right">
-              <button
-                v-can="'users.update'"
-                class="mr-2 text-brand-600 hover:underline"
-                @click="router.push({ name: 'users.edit', params: { id: user.id } })"
-              >
-                Editar
-              </button>
-              <button
-                v-if="auth.can('users.delete') && user.id !== auth.user?.id"
-                class="text-rose-600 hover:underline"
-                @click="remove(user)"
-              >
-                Eliminar
-              </button>
+              <RowActions>
+                <ActionButton
+                  v-can="'users.update'"
+                  variant="edit"
+                  label="Editar"
+                  @click="router.push({ name: 'users.edit', params: { id: user.id } })"
+                />
+                <ActionButton
+                  v-if="auth.can('users.delete') && user.id !== auth.user?.id"
+                  variant="danger"
+                  label="Eliminar"
+                  @click="remove(user)"
+                />
+              </RowActions>
             </td>
           </tr>
         </tbody>

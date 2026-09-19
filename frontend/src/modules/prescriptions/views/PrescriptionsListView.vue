@@ -2,6 +2,8 @@
 import { onMounted, reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import DataTable from '@/components/ui/DataTable.vue'
+import ActionButton from '@/components/ui/ActionButton.vue'
+import RowActions from '@/components/ui/RowActions.vue'
 import { prescriptionsApi } from '@/modules/prescriptions/api'
 import { useAuthStore } from '@/stores/auth'
 import { formatDateTime } from '@/utils/format'
@@ -69,7 +71,9 @@ onMounted(load)
       <template #cell-patient="{ row }">{{ row.patient?.full_name || '—' }}</template>
       <template #cell-doctor="{ row }">{{ row.doctor?.name || '—' }}</template>
       <template #cell-actions="{ row }">
-        <button class="text-brand-700 hover:underline" @click="router.push({ name: 'prescriptions.show', params: { id: row.id } })">Ver</button>
+        <RowActions>
+          <ActionButton variant="view" label="Ver" @click="router.push({ name: 'prescriptions.show', params: { id: row.id } })" />
+        </RowActions>
       </template>
     </DataTable>
   </div>

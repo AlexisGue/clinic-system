@@ -17,6 +17,14 @@ function withTimeout(promise, ms) {
   })
 }
 
+/** True when the browser likely has a Sanctum/Laravel session cookie. */
+function hasSessionHint() {
+  return document.cookie.split(';').some((part) => {
+    const name = part.trim().split('=')[0]
+    return name === 'XSRF-TOKEN' || name.endsWith('-session') || name.endsWith('_session')
+  })
+}
+
 /**
  * Global auth state. The session credential itself lives in an
  * HttpOnly cookie managed by the browser: this store only keeps
@@ -42,6 +50,13 @@ export const useAuthStore = defineStore('auth', {
      */
     async init(timeoutMs = 8000) {
       if (this.initialized) return
+
+      // No cookie ⇒ definitely a guest. Skip /auth/me to avoid a noisy 401 in DevTools.
+      if (!hasSessionHint()) {
+        this.user = null
+        this.initialized = true
+        return
+      }
 
       try {
         const { data } = await withTimeout(authApi.me(), timeoutMs)

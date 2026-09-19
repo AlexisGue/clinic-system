@@ -3,6 +3,8 @@ import { computed, onMounted, reactive, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import FormField from '@/components/ui/FormField.vue'
 import BaseModal from '@/components/ui/BaseModal.vue'
+import ActionButton from '@/components/ui/ActionButton.vue'
+import RowActions from '@/components/ui/RowActions.vue'
 import { patientsApi } from '@/modules/patients/api'
 import { useAuthStore } from '@/stores/auth'
 import { formatDate, formatDateTime } from '@/utils/format'
@@ -271,8 +273,10 @@ onMounted(loadPatient)
                 <td class="px-4 py-3">{{ c.phone || '—' }}</td>
                 <td class="px-4 py-3">{{ c.is_emergency ? 'Sí' : 'No' }}</td>
                 <td class="px-4 py-3 text-right">
-                  <button v-if="auth.can('patients.update')" class="mr-2 text-brand-700 hover:underline" @click="openContactEdit(c)">Editar</button>
-                  <button v-if="auth.can('patients.update')" class="text-rose-600 hover:underline" @click="removeContact(c)">Eliminar</button>
+                  <RowActions>
+                    <ActionButton v-if="auth.can('patients.update')" variant="edit" label="Editar" @click="openContactEdit(c)" />
+                    <ActionButton v-if="auth.can('patients.update')" variant="danger" label="Eliminar" @click="removeContact(c)" />
+                  </RowActions>
                 </td>
               </tr>
               <tr v-if="!contacts.length">

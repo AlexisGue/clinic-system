@@ -9,5 +9,6 @@ export const authApi = {
   branding: () => api.get('/auth/branding'),
   login: (credentials) => api.post('/auth/login', credentials),
   logout: () => api.post('/auth/logout'),
-  me: () => api.get('/auth/me'),
+  // silentAuth: expected 401 when guest — don't treat as session expiry.
+  me: () => api.get('/auth/me', { silentAuth: true }),
 }

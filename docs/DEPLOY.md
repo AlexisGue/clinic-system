@@ -52,10 +52,12 @@ SESSION_LIFETIME=10080
 SESSION_ENCRYPT=true
 SESSION_SECURE_COOKIE=true
 SESSION_DOMAIN=
-SESSION_SAME_SITE=none
+# Con proxy Vercel (same-origin) usa lax. Solo none si el front llama a Render directo.
+SESSION_SAME_SITE=lax
 
 SANCTUM_STATEFUL_DOMAINS=TU-APP.vercel.app
 
+# Solo true en el PRIMER deploy (crea admin@demo.test). Luego déjalo en false.
 RUN_SEED=true
 SEED_DEMO_USERS=true
 LOG_LEVEL=error
@@ -110,11 +112,8 @@ SANCTUM_STATEFUL_DOMAINS=clinic-system-xxxx.vercel.app
 
 (sin `https://` en `SANCTUM_STATEFUL_DOMAINS`)
 
-En **Vercel**, confirma:
-
-```env
-VITE_API_URL=https://TU-API.onrender.com
-```
+En **Vercel**, confirma que **no** exista `VITE_API_URL` (o esté vacía).
+El proxy de `vercel.json` ya reenvía `/api` y `/sanctum` a Render (mismo origen = cookies CSRF OK).
 
 ---
 

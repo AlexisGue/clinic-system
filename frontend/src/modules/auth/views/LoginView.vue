@@ -23,12 +23,41 @@ const showPassword = ref(false)
 const capsLockOn = ref(false)
 const clinicName = ref('Clinic System')
 const tagline = ref('Atención más ordenada: pacientes, agenda, consultas y recetas en un solo lugar.')
+const serverWaking = ref(false)
 
 const brandTitle = computed(() => clinicName.value || 'Clinic System')
+
+/** Ping /up so Render starts waking while the user types credentials. */
+async function wakeApi(timeoutMs = 90000) {
+  const controller = new AbortController()
+  const timer = setTimeout(() => controller.abort(), timeoutMs)
+  try {
+    const res = await fetch('/up', { signal: controller.signal, cache: 'no-store' })
+    return res.ok
+  } catch {
+    return false
+  } finally {
+    clearTimeout(timer)
+  }
+}
 
 onMounted(async () => {
   if (route.query.reason === 'session') {
     generalError.value = 'Tu sesión expiró. Inicia sesión de nuevo para continuar.'
+  }
+
+  serverWaking.value = true
+  const awake = await wakeApi(25000)
+  serverWaking.value = !awake
+  if (!awake) {
+    generalError.value = 'El servidor está despertando (plan free). Espera ~1 minuto e intenta entrar.'
+    // Keep trying in background so login works when ready.
+    wakeApi(120000).then((ok) => {
+      serverWaking.value = !ok
+      if (ok && generalError.value?.includes('despertando')) {
+        generalError.value = null
+      }
+    })
   }
 
   try {
@@ -55,6 +84,16 @@ async function submit() {
   generalError.value = null
 
   try {
+    // If API still cold, wake it before CSRF/login.
+    if (serverWaking.value) {
+      const ok = await wakeApi(90000)
+      serverWaking.value = !ok
+      if (!ok) {
+        generalError.value = 'El servidor sigue despertando. Espera un momento e intenta de nuevo.'
+        return
+      }
+    }
+
     await auth.login({
       email: form.email,
       password: form.password,
@@ -73,7 +112,8 @@ async function submit() {
     const status = error.response?.status
     const data = error.response?.data
 
-    if (error.message === 'timeout' || error.code === 'ECONNABORTED') {
+    if (error.message === 'timeout' || error.code === 'ECONNABORTED' || error.name === 'AbortError') {
+      serverWaking.value = true
       generalError.value = 'El servidor está despertando. Espera ~1 minuto e intenta de nuevo.'
     } else if (status === 422) {
       errors.value = data?.errors ?? {}
@@ -83,6 +123,8 @@ async function submit() {
         || 'Correo o contraseña incorrectos. Verifica e intenta de nuevo.'
     } else if (status === 429) {
       generalError.value = 'Demasiados intentos. Espera un minuto e intenta de nuevo.'
+    } else if (status === 419) {
+      generalError.value = 'La sesión de seguridad expiró. Recarga la página e intenta de nuevo.'
     } else {
       generalError.value = data?.message
         || 'No se pudo conectar con el servidor. Intenta más tarde.'
@@ -176,6 +218,14 @@ async function submit() {
         </div>
 
         <form class="card-surface space-y-5 p-6 sm:p-8" novalidate @submit.prevent="submit">
+          <div
+            v-if="serverWaking"
+            class="rounded-xl border border-amber-200 bg-amber-50 px-3.5 py-2.5 text-sm text-amber-800"
+            role="status"
+          >
+            Despertando el servidor… esto puede tardar hasta 1 minuto en el plan gratuito.
+          </div>
+
           <div
             v-if="generalError"
             class="rounded-xl border border-rose-200 bg-rose-50 px-3.5 py-2.5 text-sm text-rose-700"

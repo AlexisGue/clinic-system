@@ -3,6 +3,8 @@ import { onMounted, reactive, ref } from 'vue'
 import DataTable from '@/components/ui/DataTable.vue'
 import FormField from '@/components/ui/FormField.vue'
 import BaseModal from '@/components/ui/BaseModal.vue'
+import ActionButton from '@/components/ui/ActionButton.vue'
+import RowActions from '@/components/ui/RowActions.vue'
 import { appointmentsApi } from '@/modules/appointments/api'
 import { doctorsApi } from '@/modules/doctors/api'
 import { patientsApi } from '@/modules/patients/api'
@@ -261,20 +263,20 @@ onMounted(async () => {
       <template #cell-doctor="{ row }">{{ row.doctor?.name || '—' }}</template>
       <template #cell-status="{ row }">{{ statusLabels[row.status] || row.status }}</template>
       <template #cell-actions="{ row }">
-        <button
-          v-if="auth.can('appointments.reschedule') && row.status !== 'cancelled'"
-          class="mr-2 text-brand-700 hover:underline"
-          @click="openReschedule(row)"
-        >
-          Reprogramar
-        </button>
-        <button
-          v-if="auth.can('appointments.cancel') && row.status !== 'cancelled'"
-          class="text-rose-600 hover:underline"
-          @click="openCancel(row)"
-        >
-          Cancelar
-        </button>
+        <RowActions>
+          <ActionButton
+            v-if="auth.can('appointments.reschedule') && row.status !== 'cancelled'"
+            variant="warn"
+            label="Reprogramar"
+            @click="openReschedule(row)"
+          />
+          <ActionButton
+            v-if="auth.can('appointments.cancel') && row.status !== 'cancelled'"
+            variant="danger"
+            label="Cancelar"
+            @click="openCancel(row)"
+          />
+        </RowActions>
       </template>
     </DataTable>
 

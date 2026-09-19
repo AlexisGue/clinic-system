@@ -3,6 +3,8 @@ import { onMounted, reactive } from 'vue'
 import DataTable from '@/components/ui/DataTable.vue'
 import FormField from '@/components/ui/FormField.vue'
 import BaseModal from '@/components/ui/BaseModal.vue'
+import ActionButton from '@/components/ui/ActionButton.vue'
+import RowActions from '@/components/ui/RowActions.vue'
 import { useCatalog } from '@/composables/useCatalog'
 import { useAuthStore } from '@/stores/auth'
 
@@ -78,8 +80,10 @@ onMounted(catalog.load)
         <span :class="row.is_active ? 'text-emerald-600' : 'text-slate-400'">{{ row.is_active ? 'Activo' : 'Inactivo' }}</span>
       </template>
       <template #cell-actions="{ row }">
-        <button v-if="auth.can('medicines.update')" class="mr-2 text-brand-700 hover:underline" @click="openEdit(row)">Editar</button>
-        <button v-if="auth.can('medicines.delete')" class="text-rose-600 hover:underline" @click="catalog.remove(row, row.name)">Eliminar</button>
+        <RowActions>
+          <ActionButton v-if="auth.can('medicines.update')" variant="edit" label="Editar" @click="openEdit(row)" />
+          <ActionButton v-if="auth.can('medicines.delete')" variant="danger" label="Eliminar" @click="catalog.remove(row, row.name)" />
+        </RowActions>
       </template>
     </DataTable>
 
